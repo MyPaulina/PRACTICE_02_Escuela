@@ -1,0 +1,196 @@
+CREATE DATABASE TRESFN
+USE TRESFN 
+
+--tablas simples
+
+create table carrera(
+numero_carrera char(4) primary key,
+nombre_carrera varchar(30)
+)
+
+insert into carrera values (1,'informatica')
+insert into carrera values (2,'derecho')
+insert into carrera values (3,'pedagogia')
+insert into carrera values (4,'administracion')
+
+
+alter table carrera
+add check (nombre_carrera like 'i')
+
+
+create table materia(
+numero_materia char(4) PRIMARY KEY,
+nombre_materia varchar (80)
+)
+
+insert into materia values (1,'Base de datos')
+insert into materia values (2,'Java')
+insert into materia values (3,'Civica y etica')
+insert into materia values (4,'Administracion1')
+insert into materia values (5,'Psicologia infantil')
+insert into materia values (6,'Metodologia de la investigacion')
+
+
+
+create table tipo_tel(
+id_tipotel char (3) primary key,
+tipotel varchar (20)
+)
+
+insert into tipo_tel values (1,'5558963421')
+insert into tipo_tel values (2,'9876543211')
+insert into tipo_tel values (3,'1234567899')
+insert into tipo_tel values (4,'5559362814')
+
+
+alter table libros
+  add constraint CK_tipo_tel_tipotel_positivo
+  check (tipotel>4 and tipotel<=8)
+
+
+
+create table municipio(
+id_municipio char(6) primary key,
+nombre_municipio varchar (100)
+)
+
+--delete from municipio
+
+insert into municipio values (2,'Pihuamo') 
+insert into municipio values (3,'Zapopan') 
+insert into municipio values (4,'Tonala') 
+insert into municipio values (1,'Guadalajara')
+
+
+--tablas dependientes
+create table colonia(
+id_colonia char(5) primary key,
+nombre_colonia varchar (100),
+id_municipio2 char(6)foreign key 
+references municipio (id_municipio)
+)
+
+--delete 
+
+insert into colonia values(1,'arboledas',1)
+insert into colonia values (2,'la magdalena',2)
+insert into colonia values (3,'loma dorada',4)
+insert into colonia values (4,'la calma',3)
+
+
+
+create table calle(
+id_calle char(5) primary key,
+nombre_calle varchar(80),
+id_colonia2 char(5)foreign key
+references colonia (id_colonia)
+)
+
+--delete from calle
+--drop table calle 
+
+insert into calle values (1,'abedul',1)
+insert into calle values (2,'pino',2)
+insert into calle values (3,'pino suarez',4)
+insert into calle values (4,'monte himalaya',3)
+
+
+
+
+create table alumno(
+matricula_alumno char(10),
+nombre_alumno varchar (100),
+app_alumno varchar(50),
+apm_alumno varchar(50),
+id_municipio1 char(6)foreign key
+references municipio (id_municipio),
+id_colonia1 char(5)foreign key
+references colonia (id_colonia),
+id_calle1 char(5)foreign key
+references calle (id_calle),
+numero_interior varchar (12),
+numero_exterior varchar(12),
+cp varchar(5),
+numero_carrera1 char(4) foreign key
+references carrera (numero_carrera)
+constraint pk_ma primary key (matricula_alumno),
+constraint fk_im1 foreign key(id_municipio1) references municipio(id_municipio),
+constraint fk_ic1 foreign key (id_colonia1) references colonia (id_colonia),
+constraint fk_icl1 foreign key (id_calle1) references calle (id_calle),
+)
+
+--delete from alumno
+--drop table alumno
+
+insert into alumno values (1,'sergio','perez','sanchez',1,1,1,null,'354',45056,1)
+insert into alumno values (2,'ana','lopez','carrillo',2,2,2,20,'678',42340,2)
+insert into alumno values (3,'rosario','quintana','valadez',3,4,3,null,'324',44320,3)
+insert into alumno values (4,'bernardo','ponce','jaramillo',4,3,4,'12','354',45056,4)
+
+
+
+
+
+--tablas intermedias
+create table alumno_materia(
+matricula_alumno1 char(10),
+numero_materia1 char(4),
+constraint fk_ma1 foreign key (matricula_alumno1) references alumno (matricula_alumno),
+constraint fk_nm1 foreign key(numero_materia1) references materia(numero_materia),
+
+)
+
+insert into alumno_materia values (1,1)
+insert into alumno_materia values (1,2)
+insert into alumno_materia values (2,3)
+insert into alumno_materia values (3,3)
+insert into alumno_materia values (3,5)
+insert into alumno_materia values (4,6)
+insert into alumno_materia values (4,4)
+
+
+create table alumno_tipotel(
+id_tipotel1 char(3),
+matricula_alumno2 char(10),
+constraint fk_itp1 foreign key (id_tipotel1) references tipo_tel (id_tipotel),
+constraint fk_ma2 foreign key (matricula_alumno2) references alumno (matricula_alumno) 
+)
+
+
+insert into alumno_tipotel values (1,1)
+insert into alumno_tipotel values (2,2)
+insert into alumno_tipotel values (3,3)
+insert into alumno_tipotel values (4,4)
+
+--selects
+
+select * from carrera
+select * from materia
+select * from colonia
+select * from tipo_tel
+select * from municipio
+select * from calle
+select * from alumno
+select * from alumno_materia
+select * from alumno_tipotel
+
+
+
+select id_municipio1, matricula_alumno,nombre_alumno 
+from alumno
+
+--cheks
+
+alter table carrera
+add check (nombre_carrera like 'i')
+
+
+alter table alumno
+add constraint CHK_nombrealumno
+check (nombre_alumno like '[a-d][0-5]'),
+
+
+
+check (matricula_alumno LIKE 'alumno-[A-Z][0-9][0-9][0-9][A-D][D-Z]')
+
+
